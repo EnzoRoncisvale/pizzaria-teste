@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pizzaria Paulistana - Delivery Online | Brasília-DF</title>
+  <meta name="description" content="Pizzaria Paulistana Delivery em Brasília. Peça as melhores pizzas artesanais, tradicionais e nobres com entrega rápida no Asa Sul, Asa Norte, Sudoeste e região." />
+  
+  <!-- Fontes -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600;1,700&display=swap" rel="stylesheet" />
+
+  <!-- Estilos -->
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="custom.css" />
+  <link rel="icon" href="assets/logo-expressodelivery.png" type="image/png" />
+</head>
+<body class="bg-[#0f1013] text-[#f8f9fa] antialiased selection:bg-amber-500 selection:text-black">
+
+  <!-- TOP BAR / NOTIFICAÇÃO E REGIAO -->
+  <div class="bg-gradient-to-r from-red-950/90 via-zinc-950 to-red-950/90 border-b border-white/5 py-2 px-4 text-xs">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 font-semibold border border-emerald-500/20">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Aberto agora até 00:00
+        </span>
+        <span class="hidden sm:inline text-gray-400">|</span>
+        <button onclick="openModal('bairro-modal')" class="text-gray-300 hover:text-gold flex items-center gap-1.5 transition-colors cursor-pointer">
+          <i data-lucide="map-pin" class="w-3.5 h-3.5 text-gold"></i>
+          <span>Entregar em: <strong id="current-bairro-name" class="text-white underline decoration-gold/50">Asa Sul</strong></span>
+          <span class="text-[11px] text-gray-400">(Taxa: <span id="current-delivery-fee" class="text-emerald-400 font-bold">Grátis</span>)</span>
+        </button>
+      </div>
+
+      <div class="flex items-center gap-4">
+        <div class="hidden md:flex items-center gap-1 text-gray-400">
+          <i data-lucide="store" class="w-3.5 h-3.5 text-gold"></i>
+          <span>Unidade: <strong id="current-filial-name" class="text-gray-200">Unidade Asa Sul</strong></span>
+        </div>
+        <a href="https://wa.me/5561996469284" target="_blank" class="text-emerald-400 hover:text-emerald-300 flex items-center gap-1 font-semibold transition-colors">
+          <i data-lucide="phone" class="w-3.5 h-3.5"></i> (61) 99646-9284
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- STICKY HEADER / NAVEGAÇÃO -->
+  <header class="sticky top-0 z-40 glass-nav shadow-lg">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between gap-4">
+      
+      <!-- Logo da Pizzaria -->
+      <a href="#" class="flex items-center gap-3 group">
+        <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-amber-600 to-red-600 p-[2px] shadow-lg group-hover:scale-105 transition-transform">
+          <div class="w-full h-full bg-[#141519] rounded-full flex items-center justify-center">
+            <i data-lucide="pizza" class="w-6 h-6 text-gold"></i>
+          </div>
+        </div>
+        <div>
+          <span class="font-display text-xl font-bold tracking-tight text-gradient-gold block leading-tight">Pizzaria Paulistana</span>
+          <span class="text-[10px] tracking-widest uppercase text-gray-400 font-semibold">Tradição & Delivery DF</span>
+        </div>
+      </a>
+
+      <!-- Seletor de Modo / Tabs de Visualização -->
+      <div class="hidden lg:flex items-center bg-zinc-900/90 p-1 rounded-xl border border-white/5 text-xs">
+        <button id="tab-btn-modern" onclick="switchTab('modern')" class="px-4 py-2 rounded-lg bg-gold text-black font-bold transition-all cursor-pointer">
+          🍕 Cardápio Moderno
+        </button>
+        <button id="tab-btn-expresso" onclick="switchTab('expresso')" class="px-4 py-2 rounded-lg text-gray-400 hover:text-white transition-all cursor-pointer">
+          🏬 Portal Filiais (Expresso Delivery)
+        </button>
+      </div>
+
+      <!-- Links de Navegação Rápida -->
+      <nav class="hidden md:flex items-center gap-6 text-sm font-medium text-gray-300">
+        <a href="#cardapio" class="hover:text-gold transition-colors">Cardápio</a>
+        <a href="#destaques" class="hover:text-gold transition-colors">Diferenciais</a>
+        <a href="#galeria" class="hover:text-gold transition-colors">Galeria</a>
+        <a href="#depoimentos" class="hover:text-gold transition-colors">Avaliações</a>
+      </nav>
+
+      <!-- Botões de Ação & Carrinho -->
+      <div class="flex items-center gap-3">
+        <button onclick="toggleCartDrawer()" class="relative flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-gradient-to-r from-red-600 to-amber-600 hover:from-red-500 hover:to-amber-500 text-white font-bold text-sm shadow-md transition-all active:scale-95 cursor-pointer">
+          <i data-lucide="shopping-bag" class="w-4 h-4"></i>
+          <span class="hidden sm:inline">Meu Carrinho</span>
+          <span class="cart-count-badge hidden w-5 h-5 rounded-full bg-white text-zinc-950 text-xs font-black flex items-center justify-center">0</span>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- ============================================== -->
+  <!-- VIEW 1: CARDÁPIO DELIVERY MODERNO (PADRÃO)     -->
+  <!-- ============================================== -->
+  <main id="modern-view" class="transition-opacity duration-300">
+
+    <!-- HERO SECTION -->
+    <section class="relative min-h-[520px] flex items-center py-20 overflow-hidden">
+      <!-- Imagem de Fundo com Overlay -->
+      <div class="absolute inset-0 z-0">
+        <img src="assets/hero-pizza.jpg" alt="Pizzaria Paulistana Forno e Massa Artesanal" class="w-full h-full object-cover object-center filter brightness-50 contrast-110" />
+        <div class="absolute inset-0 bg-gradient-to-r from-[#0f1013] via-[#0f1013]/85 to-transparent"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-[#0f1013] via-transparent to-transparent"></div>
+      </div>
+
+      <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 w-full">
+        <div class="max-w-2xl">
+          <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-gold text-xs font-semibold mb-6">
+            <i data-lucide="flame" class="w-4 h-4 text-red-500"></i> Há mais de 6 anos assando as melhores pizzas de Brasília
+          </div>
+
+          <h1 class="font-display text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white leading-tight mb-5">
+            Sabor Autêntico e <br /><span class="text-gradient-gold">Tradição Artesanal</span>
+          </h1>
+
+          <p class="text-base sm:text-lg text-gray-300 mb-8 leading-relaxed font-light">
+            Massa de fermentação natural de 24 horas, queijos selecionados e assamento em alta temperatura. Entregas rápidas e fumegantes para toda Brasília.
+          </p>
+
+          <div class="flex flex-wrap items-center gap-4">
+            <a href="#cardapio" class="px-7 py-3.5 rounded-xl bg-gradient-to-r from-[#e5b352] to-[#c98e28] hover:from-[#fce09b] hover:to-[#e5b352] text-zinc-950 font-bold text-sm shadow-xl transition-all flex items-center gap-2 transform hover:-translate-y-0.5">
+              <i data-lucide="utensils" class="w-4 h-4"></i> Explorar Cardápio
+            </a>
+            <button onclick="openModal('bairro-modal')" class="px-6 py-3.5 rounded-xl bg-zinc-900/90 hover:bg-zinc-800 text-white border border-white/10 font-semibold text-sm transition-all flex items-center gap-2 cursor-pointer">
+              <i data-lucide="map-pin" class="w-4 h-4 text-gold"></i> Trocar Minha Região
+            </button>
+          </div>
+
+          <!-- Badges de Confiança -->
+          <div class="grid grid-cols-3 gap-4 mt-12 pt-8 border-t border-white/10">
+            <div>
+              <span class="font-display text-2xl font-bold text-white block">4.9 ★</span>
+              <span class="text-xs text-gray-400">Avaliações no Google</span>
+            </div>
+            <div>
+              <span class="font-display text-2xl font-bold text-gold block">35-50 min</span>
+              <span class="text-xs text-gray-400">Tempo de Entrega</span>
+            </div>
+            <div>
+              <span class="font-display text-2xl font-bold text-emerald-400 block">+15 mil</span>
+              <span class="text-xs text-gray-400">Pizzas Entregues</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION CARDÁPIO & FILTROS -->
+    <section id="cardapio" class="py-16 max-w-7xl mx-auto px-4 sm:px-6">
+      
+      <!-- Cabeçalho da Seção -->
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
+        <div>
+          <span class="text-xs uppercase tracking-widest text-gold font-bold mb-1 block">Nosso Menu Completo</span>
+          <h2 class="font-display text-3xl sm:text-4xl font-extrabold text-white">Cardápio de Pizzas & Bebidas</h2>
+        </div>
+
+        <!-- Barra de Busca -->
+        <div class="relative w-full md:w-80">
+          <i data-lucide="search" class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"></i>
+          <input 
+            type="text" 
+            id="search-input" 
+            placeholder="Buscar por sabor ou ingrediente..." 
+            class="w-full bg-zinc-900/90 border border-white/10 rounded-xl pl-10 pr-4 py-2.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-gold transition-colors"
+          />
+        </div>
+      </div>
+
+      <!-- Filtros por Categoria -->
+      <div class="flex items-center gap-2 overflow-x-auto pb-4 mb-8 scrollbar-none">
+        <button data-category="todas" class="category-pill active px-4 py-2 rounded-xl text-xs font-semibold cursor-pointer">
+          🍕 Todas
+        </button>
+        <button data-category="populares" class="category-pill px-4 py-2 rounded-xl text-xs font-semibold cursor-pointer">
+          🔥 Mais Pedidas (R$ 32,99)
+        </button>
+        <button data-category="tradicionais" class="category-pill px-4 py-2 rounded-xl text-xs font-semibold cursor-pointer">
+          🧀 Tradicionais (R$ 34,99)
+        </button>
+        <button data-category="especiais" class="category-pill px-4 py-2 rounded-xl text-xs font-semibold cursor-pointer">
+          ⭐ Nobres & Especiais (R$ 36,99)
+        </button>
+        <button data-category="doces" class="category-pill px-4 py-2 rounded-xl text-xs font-semibold cursor-pointer">
+          🍫 Doces Artesanais (R$ 32,99)
+        </button>
+        <button data-category="bebidas" class="category-pill px-4 py-2 rounded-xl text-xs font-semibold cursor-pointer">
+          🥤 Bebidas
+        </button>
+        <button data-category="molhos" class="category-pill px-4 py-2 rounded-xl text-xs font-semibold cursor-pointer">
+          🌿 Molhos
+        </button>
+      </div>
+
+      <!-- Grid de Produtos -->
+      <div id="products-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <!-- Injetado dinamicamente via JavaScript -->
+      </div>
+    </section>
+
+    <!-- SECTION DESTAQUES / DIFERENCIAIS -->
+    <section id="destaques" class="py-16 bg-zinc-950/60 border-y border-white/5">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6">
+        <div class="text-center max-w-2xl mx-auto mb-12">
+          <span class="text-xs uppercase tracking-widest text-gold font-bold block mb-1">Qualidade Superior</span>
+          <h2 class="font-display text-3xl font-extrabold text-white mb-3">Por que escolher a Paulistana?</h2>
+          <p class="text-xs sm:text-sm text-gray-400">Cada detalhe do nosso preparo é pensado para levar uma experiência autêntica até a sua mesa.</p>
+        </div>
+
+        <div id="features-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <!-- Injetado via JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION GALERIA -->
+    <section id="galeria" class="py-16 max-w-7xl mx-auto px-4 sm:px-6">
+      <div class="text-center max-w-2xl mx-auto mb-12">
+        <span class="text-xs uppercase tracking-widest text-gold font-bold block mb-1">Feito com Paixão</span>
+        <h2 class="font-display text-3xl font-extrabold text-white mb-3">Galeria de Sabores</h2>
+        <p class="text-xs sm:text-sm text-gray-400">Confira imagens reais dos nossos produtos e bordas recheadas de dar água na boca.</p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+        <div class="relative h-72 rounded-2xl overflow-hidden group shadow-lg">
+          <img src="assets/gallery-2.jpg" alt="Pizza Artesanal Forno" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+          <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-6">
+            <span class="font-display text-base font-bold text-white">Forno em Alta Temperatura</span>
+          </div>
+        </div>
+
+        <div class="relative h-72 rounded-2xl overflow-hidden group shadow-lg">
+          <img src="assets/gallery-3.jpg" alt="Ingredientes Frescos e Queijo Derretido" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+          <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-6">
+            <span class="font-display text-base font-bold text-white">Queijos & Recheios Nobres</span>
+          </div>
+        </div>
+
+        <div class="relative h-72 rounded-2xl overflow-hidden group shadow-lg">
+          <img src="assets/gallery-4.jpg" alt="Borda Recheada Artesanal" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+          <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-6">
+            <span class="font-display text-base font-bold text-white">Bordas Recheadas com Catupiry</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION DEPOIMENTOS -->
+    <section id="depoimentos" class="py-16 bg-zinc-950/60 border-t border-white/5">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6">
+        <div class="text-center max-w-2xl mx-auto mb-12">
+          <span class="text-xs uppercase tracking-widest text-gold font-bold block mb-1">Satisfação Garantida</span>
+          <h2 class="font-display text-3xl font-extrabold text-white mb-3">O que dizem os nossos clientes</h2>
+          <p class="text-xs sm:text-sm text-gray-400">Mais de 15.000 clientes atendidos em Brasília com nota máxima de aprovação.</p>
+        </div>
+
+        <div id="reviews-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <!-- Injetado via JS -->
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ============================================================== -->
+  <!-- VIEW 2: PORTAL EXPRESSO DELIVERY (ENGENHARIA REVERSA 100%)     -->
+  <!-- ============================================================== -->
+  <section id="expresso-view" class="hidden min-h-screen py-12 px-4 max-w-5xl mx-auto">
+    <div class="text-center mb-8">
+      <img src="assets/logo-expressodelivery.png" alt="Expresso Delivery" class="h-16 mx-auto mb-4" />
+      <h2 class="text-2xl font-bold text-white mb-2">Portal de Filiais & Pedidos</h2>
+      <p class="text-sm text-gray-400 max-w-xl mx-auto">
+        Estrutura original do sistema <span class="text-red-400 font-semibold">pizzariapaulistanadelivery.com.br</span> reconstruída. Selecione a unidade de Brasília para atendimento local.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12" id="expresso-filiais-container">
+      <!-- Injetado via JS com os dados originais das 3 filiais -->
+    </div>
+
+    <!-- Banner promocional original -->
+    <div class="rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
+      <img src="assets/banner-expressodelivery.png" alt="Banner Expresso Delivery Pizzaria Paulistana" class="w-full object-cover" />
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="bg-zinc-950 border-t border-white/10 pt-16 pb-12 text-xs text-gray-400">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 grid grid-cols-1 md:grid-cols-4 gap-10 mb-12">
+      
+      <div>
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-9 h-9 rounded-full bg-red-600/20 text-gold flex items-center justify-center font-bold">
+            <i data-lucide="pizza" class="w-5 h-5"></i>
+          </div>
+          <span class="font-display text-base font-bold text-white">Pizzaria Paulistana</span>
+        </div>
+        <p class="leading-relaxed mb-4 text-gray-400">
+          A verdadeira pizza artesanal em Brasília. Ingredientes nobres, massa com descanso de 24h e entregas para diversas regiões administrativas.
+        </p>
+        <span class="text-emerald-400 font-semibold block">● Terça a Domingo das 17h às 00h</span>
+      </div>
+
+      <div>
+        <h4 class="font-bold text-white text-sm mb-4 uppercase tracking-wider">Unidades no DF</h4>
+        <ul class="space-y-2.5">
+          <li class="flex items-start gap-2">
+            <i data-lucide="map-pin" class="w-3.5 h-3.5 text-gold shrink-0 mt-0.5"></i>
+            <span><strong>Asa Sul:</strong> CLS 413 Bloco C, Loja 22</span>
+          </li>
+          <li class="flex items-start gap-2">
+            <i data-lucide="map-pin" class="w-3.5 h-3.5 text-gold shrink-0 mt-0.5"></i>
+            <span><strong>Asa Norte:</strong> CLN 411 Bloco E, Loja 67</span>
+          </li>
+          <li class="flex items-start gap-2">
+            <i data-lucide="map-pin" class="w-3.5 h-3.5 text-gold shrink-0 mt-0.5"></i>
+            <span><strong>Sudoeste:</strong> CCSW 6, Bloco B/C, Loja 55</span>
+          </li>
+          <li class="flex items-start gap-2">
+            <i data-lucide="map-pin" class="w-3.5 h-3.5 text-gold shrink-0 mt-0.5"></i>
+            <span><strong>Fazendinha:</strong> Q 1, Conjunto J, Lote 15</span>
+          </li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="font-bold text-white text-sm mb-4 uppercase tracking-wider">Formas de Pagamento</h4>
+        <ul class="space-y-2">
+          <li class="flex items-center gap-2">
+            <i data-lucide="qr-code" class="w-3.5 h-3.5 text-emerald-400"></i> PIX Instantâneo
+          </li>
+          <li class="flex items-center gap-2">
+            <i data-lucide="credit-card" class="w-3.5 h-3.5 text-blue-400"></i> Cartão de Crédito e Débito
+          </li>
+          <li class="flex items-center gap-2">
+            <i data-lucide="banknote" class="w-3.5 h-3.5 text-amber-400"></i> Dinheiro (com troco)
+          </li>
+          <li class="flex items-center gap-2">
+            <i data-lucide="ticket" class="w-3.5 h-3.5 text-pink-400"></i> Vale Refeição / Alimentação
+          </li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="font-bold text-white text-sm mb-4 uppercase tracking-wider">Atendimento Rápido</h4>
+        <p class="mb-3">Dúvidas sobre o cardápio ou pedidos corporativos?</p>
+        <a href="https://wa.me/5561996469284" target="_blank" class="w-full py-2.5 px-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl flex items-center justify-center gap-2 transition-all">
+          <i data-lucide="message-circle" class="w-4 h-4"></i> WhatsApp de Pedidos
+        </a>
+      </div>
+
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 pt-6 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-gray-500">
+      <p>© 2026 Pizzaria Paulistana. Todos os direitos reservados.</p>
+      <p class="text-gray-400">Engenharia Reversa por Agente Inteligente • Arquitetura & Dados Originais Reconstruídos</p>
+    </div>
+  </footer>
+
+  <!-- ============================================== -->
+  <!-- MODAL: PERSONALIZAR PIZZA                      -->
+  <!-- ============================================== -->
+  <div id="pizza-customizer-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop overflow-y-auto">
+    <div class="modal-content w-full max-w-xl max-h-[90vh] overflow-y-auto p-6 relative">
+      
+      <button onclick="closeModal('pizza-customizer-modal')" class="absolute top-5 right-5 text-gray-400 hover:text-white p-1 cursor-pointer">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <div class="mb-6">
+        <span class="text-[11px] uppercase tracking-widest text-gold font-bold block mb-1">Montagem Artesanal</span>
+        <h3 id="modal-pizza-title" class="font-display text-2xl font-bold text-white mb-1.5">Pizza Margherita</h3>
+        <p id="modal-pizza-desc" class="text-xs text-gray-400 leading-relaxed">Mussarela especial, tomates frescos e manjericão.</p>
+      </div>
+
+      <!-- 1. Tamanho da Pizza -->
+      <div class="mb-5 pb-5 border-b border-white/10">
+        <label class="text-xs font-bold text-gray-300 block mb-2.5 uppercase tracking-wider">1. Escolha o Tamanho</label>
+        <div class="grid grid-cols-2 gap-3">
+          <label class="flex items-center justify-between p-3.5 rounded-xl bg-zinc-900 border border-white/5 cursor-pointer hover:border-gold/50 transition-colors">
+            <div>
+              <div class="flex items-center gap-2">
+                <input type="radio" name="custom-size" id="custom-size-grande" value="grande" checked onchange="updateCustomizerCalculations()" class="accent-amber-500" />
+                <span class="text-sm font-bold text-white">Grande (8 Fatias)</span>
+              </div>
+              <span class="text-[11px] text-gray-400 block ml-5">Tamanho padrão (35cm)</span>
+            </div>
+            <span class="text-xs font-semibold text-emerald-400">Padrão</span>
+          </label>
+
+          <label class="flex items-center justify-between p-3.5 rounded-xl bg-zinc-900 border border-white/5 cursor-pointer hover:border-gold/50 transition-colors">
+            <div>
+              <div class="flex items-center gap-2">
+                <input type="radio" name="custom-size" id="custom-size-broto" value="broto" onchange="updateCustomizerCalculations()" class="accent-amber-500" />
+                <span class="text-sm font-bold text-white">Broto (4 Fatias)</span>
+              </div>
+              <span class="text-[11px] text-gray-400 block ml-5">Individual (25cm)</span>
+            </div>
+            <span class="text-xs font-semibold text-gold">- R$ 5,00</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- 2. Sabores: 1 ou 2 Sabores (Meio a Meio) -->
+      <div class="mb-5 pb-5 border-b border-white/10">
+        <label class="text-xs font-bold text-gray-300 block mb-2.5 uppercase tracking-wider">2. Sabores</label>
+        <div class="grid grid-cols-2 gap-3 mb-3">
+          <label class="flex items-center gap-2 p-3 rounded-xl bg-zinc-900 border border-white/5 cursor-pointer hover:border-gold/50">
+            <input type="radio" name="custom-type" id="custom-type-inteira" value="inteira" checked onchange="updateCustomizerCalculations()" class="accent-amber-500" />
+            <span class="text-xs text-white">1 Sabor (Inteira)</span>
+          </label>
+          <label class="flex items-center gap-2 p-3 rounded-xl bg-zinc-900 border border-white/5 cursor-pointer hover:border-gold/50">
+            <input type="radio" name="custom-type" id="custom-type-meio" value="meio" onchange="updateCustomizerCalculations()" class="accent-amber-500" />
+            <span class="text-xs text-white">2 Sabores (Meio a Meio)</span>
+          </label>
+        </div>
+
+        <div id="flavor2-section" class="hidden mt-3 p-3.5 rounded-xl bg-zinc-900/90 border border-gold/30">
+          <label class="text-xs font-semibold text-gold block mb-1.5">Escolha o 2º Sabor:</label>
+          <select id="modal-select-flavor2" onchange="updateCustomizerCalculations()" class="w-full bg-zinc-950 border border-white/10 rounded-lg p-2.5 text-xs text-white focus:outline-none focus:border-gold">
+            <!-- Injetado via JS -->
+          </select>
+          <span class="text-[10px] text-gray-400 mt-1.5 block leading-tight">* No meio a meio prevalece o valor do sabor de maior preço.</span>
+        </div>
+      </div>
+
+      <!-- 3. Bordas Recheadas -->
+      <div class="mb-5 pb-5 border-b border-white/10">
+        <label class="text-xs font-bold text-gray-300 block mb-2.5 uppercase tracking-wider">3. Borda Recheada (Opcional)</label>
+        <div class="space-y-2" id="modal-bordas-options">
+          <!-- Injetado dinamicamente via JS -->
+        </div>
+      </div>
+
+      <!-- 4. Adicional Molho Verde Especial -->
+      <div class="mb-5 pb-5 border-b border-white/10">
+        <label class="text-xs font-bold text-gray-300 block mb-2.5 uppercase tracking-wider">4. Adicionais da Casa</label>
+        <label class="flex items-center justify-between p-3 rounded-xl bg-zinc-900 border border-white/5 cursor-pointer hover:border-gold/50 transition-colors">
+          <div class="flex items-center gap-2.5">
+            <input type="checkbox" id="custom-molho-verde" onchange="updateCustomizerCalculations()" class="accent-amber-500" />
+            <span class="text-xs text-white">Pote de Molho Verde da Casa (ervas frescas)</span>
+          </div>
+          <span class="text-xs font-semibold text-gradient-gold">+ R$ 4,00</span>
+        </label>
+      </div>
+
+      <!-- 5. Observações -->
+      <div class="mb-6">
+        <label class="text-xs font-bold text-gray-300 block mb-1.5 uppercase tracking-wider">5. Observações do Pedido</label>
+        <input 
+          type="text" 
+          id="custom-pizza-obs" 
+          placeholder="Ex: sem cebola, massa bem crocante, etc." 
+          class="w-full bg-zinc-900 border border-white/10 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-gold"
+        />
+      </div>
+
+      <!-- Rodapé do Modal com Preço e Ação -->
+      <div class="flex items-center justify-between pt-4 border-t border-white/10">
+        <div>
+          <span class="text-[11px] text-gray-400 block">Total do Item</span>
+          <span id="modal-pizza-price-display" class="font-display text-2xl font-bold text-gradient-gold">R$ 0,00</span>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <div class="flex items-center gap-2 bg-zinc-900 px-3 py-1.5 rounded-xl border border-white/10">
+            <button onclick="changeCustomQty(-1)" class="text-gray-400 hover:text-white cursor-pointer"><i data-lucide="minus" class="w-4 h-4"></i></button>
+            <span id="custom-qty-display" class="font-bold text-xs text-white min-w-[18px] text-center">1</span>
+            <button onclick="changeCustomQty(1)" class="text-gray-400 hover:text-white cursor-pointer"><i data-lucide="plus" class="w-4 h-4"></i></button>
+          </div>
+
+          <button onclick="confirmAddPizzaToCart()" class="px-6 py-3 rounded-xl bg-gradient-to-r from-[#e5b352] to-[#c98e28] hover:from-[#fce09b] hover:to-[#e5b352] text-zinc-950 font-bold text-xs shadow-lg transition-all active:scale-95 cursor-pointer">
+            Adicionar ao Carrinho
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ============================================== -->
+  <!-- MODAL: SELECIONAR BAIRRO & FILIAL              -->
+  <!-- ============================================== -->
+  <div id="bairro-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop">
+    <div class="modal-content w-full max-w-md p-6 relative">
+      <button onclick="closeModal('bairro-modal')" class="absolute top-5 right-5 text-gray-400 hover:text-white p-1 cursor-pointer">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <div class="flex items-center gap-3 mb-4">
+        <div class="w-10 h-10 rounded-full bg-amber-500/10 text-gold flex items-center justify-center">
+          <i data-lucide="map-pin" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h3 class="font-display text-lg font-bold text-white">Sua Região de Entrega</h3>
+          <p class="text-xs text-gray-400">Verifique a taxa e a filial mais próxima.</p>
+        </div>
+      </div>
+
+      <div class="space-y-4">
+        <div>
+          <label class="text-xs font-semibold text-gray-300 block mb-1">Cidade</label>
+          <select disabled class="w-full bg-zinc-900 border border-white/10 rounded-xl p-3 text-xs text-white">
+            <option>Brasília - Distrito Federal</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="text-xs font-semibold text-gray-300 block mb-1">Bairro / Quadra</label>
+          <select id="modal-select-bairro" class="w-full bg-zinc-950 border border-white/10 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-gold">
+            <!-- Injetado dinamicamente com os 36 bairros -->
+          </select>
+        </div>
+      </div>
+
+      <div class="mt-6 pt-4 border-t border-white/10 text-[11px] text-gray-400 flex items-center justify-between">
+        <span>Taxas entre R$ 0,00 e R$ 8,90</span>
+        <button onclick="closeModal('bairro-modal')" class="text-gold font-bold hover:underline cursor-pointer">Fechar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================== -->
+  <!-- DRAWER: CARRINHO LATERAL                       -->
+  <!-- ============================================== -->
+  <div id="cart-drawer" class="hidden fixed inset-0 z-50 flex justify-end">
+    <div onclick="toggleCartDrawer()" class="cart-drawer-overlay fixed inset-0"></div>
+    <div class="cart-drawer relative z-10 w-full max-w-md h-full flex flex-col justify-between p-6">
+      
+      <div>
+        <div class="flex items-center justify-between pb-4 border-b border-white/10 mb-5">
+          <div class="flex items-center gap-2.5">
+            <i data-lucide="shopping-bag" class="w-5 h-5 text-gold"></i>
+            <h3 class="font-display text-lg font-bold text-white">Meu Carrinho</h3>
+          </div>
+          <button onclick="toggleCartDrawer()" class="text-gray-400 hover:text-white p-1 cursor-pointer">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+
+        <!-- Mensagem de Carrinho Vazio -->
+        <div id="cart-empty-message" class="text-center py-20 text-gray-400">
+          <i data-lucide="shopping-cart" class="w-12 h-12 mx-auto mb-3 text-gray-600"></i>
+          <h4 class="text-base font-bold text-white mb-1">Seu carrinho está vazio</h4>
+          <p class="text-xs">Adicione uma pizza artesanal ou bebida para começar!</p>
+        </div>
+
+        <!-- Lista de Itens -->
+        <div id="cart-items-list" class="space-y-3 overflow-y-auto max-h-[50vh] pr-1">
+          <!-- Injetado dinamicamente -->
+        </div>
+      </div>
+
+      <!-- Resumo de Valores e Checkout -->
+      <div id="cart-summary-section" class="hidden pt-5 border-t border-white/10 space-y-3">
+        
+        <div class="flex items-center justify-between text-xs text-gray-400">
+          <span>Subtotal</span>
+          <span id="cart-subtotal" class="font-bold text-white">R$ 0,00</span>
+        </div>
+
+        <div class="flex items-center justify-between text-xs text-gray-400">
+          <span>Taxa de Entrega (<span id="cart-fee-bairro" class="text-gold">Asa Sul</span>)</span>
+          <span id="cart-delivery-fee" class="font-bold text-emerald-400">Grátis</span>
+        </div>
+
+        <div class="flex items-center justify-between text-base font-bold text-white pt-2 border-t border-white/5">
+          <span>Total</span>
+          <span id="cart-total" class="text-xl text-gradient-gold">R$ 0,00</span>
+        </div>
+
+        <button onclick="openCheckoutModal()" class="w-full py-3.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-sm rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95">
+          <i data-lucide="check-circle" class="w-4 h-4"></i> Avançar para Entrega
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ============================================== -->
+  <!-- MODAL: FINALIZAR PEDIDO & WHATSAPP             -->
+  <!-- ============================================== -->
+  <div id="checkout-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop overflow-y-auto">
+    <div class="modal-content w-full max-w-lg max-h-[90vh] overflow-y-auto p-6 relative">
+      
+      <button onclick="closeModal('checkout-modal')" class="absolute top-5 right-5 text-gray-400 hover:text-white p-1 cursor-pointer">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <div class="flex items-center gap-3 mb-5">
+        <div class="w-10 h-10 rounded-full bg-emerald-500/10 text-emerald-400 flex items-center justify-center font-bold">
+          <i data-lucide="truck" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h3 class="font-display text-xl font-bold text-white">Finalizar Pedido</h3>
+          <p class="text-xs text-gray-400">Preencha os dados para envio direto ao WhatsApp da filial.</p>
+        </div>
+      </div>
+
+      <!-- Tipo de Pedido -->
+      <div class="grid grid-cols-2 gap-3 mb-4">
+        <label class="flex items-center gap-2 p-3 rounded-xl bg-zinc-900 border border-white/5 cursor-pointer hover:border-gold/50">
+          <input type="radio" name="checkout-delivery-type" id="checkout-type-delivery" value="delivery" checked class="accent-emerald-500" />
+          <span class="text-xs text-white font-semibold">🛵 Entrega em Casa</span>
+        </label>
+        <label class="flex items-center gap-2 p-3 rounded-xl bg-zinc-900 border border-white/5 cursor-pointer hover:border-gold/50">
+          <input type="radio" name="checkout-delivery-type" id="checkout-type-retirada" value="retirada" class="accent-emerald-500" />
+          <span class="text-xs text-white font-semibold">🏬 Retirar no Balcão</span>
+        </label>
+      </div>
+
+      <!-- Dados do Cliente -->
+      <div class="space-y-3 mb-4">
+        <div>
+          <label class="text-[11px] font-semibold text-gray-300 block mb-1">Seu Nome Completo *</label>
+          <input type="text" id="checkout-name" placeholder="Ex: Roberto Silva" class="w-full bg-zinc-900 border border-white/10 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-gold" />
+        </div>
+
+        <div>
+          <label class="text-[11px] font-semibold text-gray-300 block mb-1">WhatsApp / Telefone de Contato *</label>
+          <input type="tel" id="checkout-phone" placeholder="Ex: (61) 99876-5432" class="w-full bg-zinc-900 border border-white/10 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-gold" />
+        </div>
+      </div>
+
+      <!-- Endereço de Entrega -->
+      <div id="checkout-address-section" class="space-y-3 mb-4">
+        <div class="grid grid-cols-3 gap-2">
+          <div class="col-span-2">
+            <label class="text-[11px] font-semibold text-gray-300 block mb-1">Rua / Quadra / Bloco *</label>
+            <input type="text" id="checkout-street" placeholder="Ex: CLS 413 Bloco B" class="w-full bg-zinc-900 border border-white/10 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-gold" />
+          </div>
+          <div>
+            <label class="text-[11px] font-semibold text-gray-300 block mb-1">Nº / Apto *</label>
+            <input type="text" id="checkout-num" placeholder="Ex: 304" class="w-full bg-zinc-900 border border-white/10 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-gold" />
+          </div>
+        </div>
+
+        <div>
+          <label class="text-[11px] font-semibold text-gray-300 block mb-1">Ponto de Referência / Complemento</label>
+          <input type="text" id="checkout-comp" placeholder="Ex: Próximo ao Big Box" class="w-full bg-zinc-900 border border-white/10 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-gold" />
+        </div>
+      </div>
+
+      <!-- Forma de Pagamento -->
+      <div class="mb-5">
+        <label class="text-[11px] font-semibold text-gray-300 block mb-2">Forma de Pagamento</label>
+        <div class="grid grid-cols-3 gap-2">
+          <label class="flex items-center gap-1.5 p-2.5 rounded-lg bg-zinc-900 border border-white/5 cursor-pointer hover:border-gold/50 text-xs">
+            <input type="radio" name="checkout-payment" value="PIX" checked class="accent-emerald-500" />
+            <span class="text-white">PIX</span>
+          </label>
+          <label class="flex items-center gap-1.5 p-2.5 rounded-lg bg-zinc-900 border border-white/5 cursor-pointer hover:border-gold/50 text-xs">
+            <input type="radio" name="checkout-payment" value="Cartão de Crédito/Débito" class="accent-emerald-500" />
+            <span class="text-white">Cartão</span>
+          </label>
+          <label class="flex items-center gap-1.5 p-2.5 rounded-lg bg-zinc-900 border border-white/5 cursor-pointer hover:border-gold/50 text-xs">
+            <input type="radio" name="checkout-payment" value="Dinheiro" class="accent-emerald-500" />
+            <span class="text-white">Dinheiro</span>
+          </label>
+        </div>
+
+        <div id="troco-section" class="hidden mt-2.5">
+          <label class="text-[11px] text-gray-400 block mb-1">Precisa de troco para quanto?</label>
+          <input type="text" id="checkout-troco" placeholder="Ex: Troco para R$ 100,00" class="w-full bg-zinc-900 border border-white/10 rounded-xl p-2 text-xs text-white" />
+        </div>
+      </div>
+
+      <!-- Botão de Confirmação -->
+      <button onclick="finalizeWhatsAppOrder()" class="w-full py-4 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-sm rounded-xl shadow-xl transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95">
+        <i data-lucide="message-circle" class="w-5 h-5"></i> Enviar Pedido via WhatsApp
+      </button>
+
+      <p class="text-[10px] text-gray-500 text-center mt-2.5">
+        Ao clicar, seu pedido será montado com os itens selecionados e enviado para atendimento imediato.
+      </p>
+
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION -->
+  <div id="toast" class="bg-zinc-900 border border-gold/40 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3">
+    <i data-lucide="check-circle" class="w-5 h-5 text-gold"></i>
+    <span id="toast-text" class="text-xs font-semibold">Item adicionado com sucesso!</span>
+  </div>
+
+  <!-- SCRIPTS -->
+  <script src="data.js"></script>
+  <script src="assets/lucide.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
